@@ -5,7 +5,7 @@ $input = 'ckczppom';
 function mine($input, $num)
 {
 	$md5 = md5($input . $num);
-	$head = substr($md5, 0, 5);
+	$head = substr($md5, 0, 6);
 	if ($head === '000000')
 	{
 		return TRUE;
