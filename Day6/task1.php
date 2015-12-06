@@ -1,6 +1,7 @@
 <?php
 
 $input = file('input');
+//$input = ['toggle 0,0 through 0,0', 'toggle 0,0 through 1,1', 'toggle 0,0 through 2,2'];
 $grid = [[]];
 
 
@@ -26,8 +27,17 @@ foreach ($input as $instruction) {
 	}
 }
 
+drawLights($grid);
 countLights($grid);
 
+function drawLights($grid) {
+	for ($i = 0; $i < count($grid); $i++) {
+		for ($j = 0; $j < count($grid[$i]); $j++) {
+			echo $grid[$i][$j];
+		}
+		echo "\n";
+	}
+}
 function countLights($grid) {
 	$on = 0;
 
@@ -44,7 +54,7 @@ function configLights($start_x, $end_x, $start_y, $end_y, $config, &$grid) {
 	for ($i = $start_x; $i <= $end_x; $i++) {
 		for ($j = $start_y; $j<= $end_y; $j++) {
 			//echo "$i, $j = " . ($config == 'toggle'? ($grid[$i][$j] + 1) % 2 : $config) . "\n";
-			$grid[$i][$j] = ($config == 'toggle') ? ($grid[$i][$j] + 1) % 1 : $config;
+			$grid[$i][$j] = ($config == 'toggle') ? ($grid[$i][$j] === 0 ? 1 : 0) : $config;
 		}
 	}
 }
