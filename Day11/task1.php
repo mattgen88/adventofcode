@@ -11,7 +11,6 @@ while (!testPassword($input)) {
 echo "$input\n";
 
 function increment_letter($input) {
-  echo $input . "\n";
   if ($input[strlen($input)-1] === 'z') {
     $new_input = increment_letter(substr($input, 0, strlen($input)-1)) . 'a';
   }
