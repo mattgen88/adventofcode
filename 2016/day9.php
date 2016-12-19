@@ -6,41 +6,43 @@ $input = "ORNXNQJQ(151x7)(5x9)OFIXU(27x3)(21x9)VDCYQELDJQUAFZUHFZVSU(34x15)(12x1
 // A(2x2)BCD(2x2)EFG
 // (6x1)(1x3)A
 // X(8x2)(3x3)ABCY
-// X(8x2)(3x3)AB(2x2)CY";
+// X(8x2)(3x3)AB(2x2)CY
+// X(3x2)YYY(1x5)N
+// ";
 
-$input = explode("\n", $input);
 
-foreach ($input as $compressed) {
-  $decompressed = "";
-  for ($i=0; $i< strlen($compressed); $i++) {
-    if ($compressed[$i] === '(') {
-      // read until closing brace
-      $marker = "";
-      while ($compressed[++$i] !== ')') {
-        $marker .= $compressed[$i];
+function decompress($start, $end, $input) {
+  // If you hit the end, return 0
+  if ($start === $end) {
+    return 0;
+  }
+  // at start of mark
+  if ($input[$start] === '(') {
+    // find end brace
+    $mark = "";
+    for ($i=$start; $i < $end; $i++) {
+      $mark .= $input[$i];
+      // found end of mark
+      if ($input[$i] === ')') {
+        break;
       }
-      $i++;
-      preg_match("/(\d+)x(\d+)/", $marker, $matches);
-      $chars = $matches[1];
-      $repeat = $matches[2];
-
-      echo "Repeating next " . $chars . " chars " . $repeat . " times\n";
-
-      $torepeat = "";
-      // read next $chars chars
-      for ($j=0; $j < $chars; $j++) {
-          $torepeat .= $compressed[$i];
-          $i++;
-      }
-      echo "Repeating " . $torepeat . " " . $repeat . " times\n";
-      $decompressed .= str_repeat($torepeat, $repeat);
     }
-    if ($i < strlen($compressed)) {
-      $decompressed .= $compressed[$i];
+    // $mark now contains the entire mark
+    // pull out the char count and repeat
+    list($chars, $repeat) = explode("x", trim($mark, "()"));
+
+    // return repeat of decompressed string following it + decompressed after the following
+    return $repeat * decompress($i+1, $i+1+$chars, $input) + decompress($i + 1 + $chars, $end, $input);
+  }
+  // did not have a start of mark, accumulate number of chars read
+  for ($i=$start;$i < $end; $i++) {
+    if ($input[$i] === '(') {
+      // leading chars + start of a mark
+      return $i - $start + decompress($i, $end, $input);
     }
   }
-  var_dump($decompressed);
+  // final case of whatever characters are left
+  return $end-$start;
 }
 
-var_dump(strlen($decompressed));
-?>
+echo decompress(0, strlen($input), $input);
