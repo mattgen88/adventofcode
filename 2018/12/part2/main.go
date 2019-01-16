@@ -16,7 +16,7 @@ type garden struct {
 // generation 95 on have value of 22
 // 50000000000 - 95 = 49999999906
 // 49999999906* 22 = 1099999997932
-// first 94 generation sum =
+// first 94 generation sum = 2543
 func (g *garden) Tick() {
 	// check each rule against the current position of pots
 	var newPots []bool
