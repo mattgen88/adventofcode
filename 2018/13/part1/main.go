@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -28,10 +29,13 @@ const (
 )
 
 type cart struct {
-	x                 int
-	y                 int
+	position          position
 	direction         int
 	previousDirection int
+}
+
+type position struct {
+	x, y int
 }
 
 func main() {
@@ -39,20 +43,17 @@ func main() {
 	lines := strings.Split(string(content), "\n")
 
 	// Our grid of tracks
-	var grid map[int]map[int]rune
-	grid = make(map[int]map[int]rune)
+	var grid map[position]rune
+	grid = make(map[position]rune)
 
 	var carts []*cart
 
 	// scan the grid
 	for row, line := range lines {
 		for col, char := range line {
-			// initialize the row if we haven't yet
-			if ready := grid[row]; ready == nil {
-				grid[row] = make(map[int]rune)
-			}
+			p := position{col, row}
 			// Set into the grid
-			grid[row][col] = char
+			grid[p] = char
 
 			// find all the carts, replace them with an appropriate straight piece
 			// We do this because it's easier to animate later
@@ -60,20 +61,20 @@ func main() {
 			switch char {
 			case 'v':
 				direction = south
-				grid[row][col] = '|'
+				grid[p] = '|'
 			case '<':
 				direction = west
-				grid[row][col] = '-'
+				grid[p] = '-'
 			case '^':
 				direction = north
-				grid[row][col] = '|'
+				grid[p] = '|'
 			case '>':
 				direction = east
-				grid[row][col] = '-'
+				grid[p] = '-'
 			default:
 				continue
 			}
-			carts = append(carts, &cart{col, row, direction, unset})
+			carts = append(carts, &cart{p, direction, unset})
 		}
 	}
 
@@ -81,20 +82,29 @@ func main() {
 		fmt.Println()
 		printGrid(grid, carts)
 		// @TODO: Carts have to move in a specific order, probably because multiple impacts can occur
-		for _, cart := range carts {
+		sort.SliceStable(carts, func(a, b int) bool {
+			if carts[a].position.x < carts[b].position.x {
+				return true
+			} else if carts[a].position.x > carts[b].position.x {
+				return false
+			}
+			return carts[a].position.y < carts[b].position.y
+		})
+
+		for cartNum, cart := range carts {
 			// move each cart until you impact
 			switch cart.direction {
 			case north:
-				cart.y--
+				cart.position.y--
 			case south:
-				cart.y++
+				cart.position.y++
 			case west:
-				cart.x--
+				cart.position.x--
 			case east:
-				cart.x++
+				cart.position.x++
 			}
 			// decide if there's a direction change
-			next := grid[cart.y][cart.x]
+			next := grid[cart.position]
 
 			//turn1        = '\\'
 			//turn2        = '/'
@@ -229,76 +239,80 @@ func main() {
 					}
 				}
 			}
+			// See if any cart collided
+			var coords map[position]bool
+			coords = make(map[position]bool)
+			newPosition := cart.position
+
+			for i, cart := range carts {
+				// move each cart until you impact
+				// decide if there's a direction change
+				if cart.position == newPosition && i != cartNum {
+					fmt.Println()
+					printGrid(grid, carts)
+					fmt.Print("Collision at", cart.position)
+					os.Exit(0)
+				}
+				coords[cart.position] = true
+			}
 		}
 
-		// See if any cart collided
-		var coords map[string]bool
-		coords = make(map[string]bool)
-		for _, cart := range carts {
-			// move each cart until you impact
-			// decide if there's a direction change
-			coord := fmt.Sprintf("%d,%d", cart.x, cart.y)
-			if ok := coords[coord]; ok {
-				fmt.Println()
-				printGrid(grid, carts)
-				fmt.Print("Collision at", coord)
-				os.Exit(0)
-			}
-			coords[coord] = true
-		}
 	}
 }
 
-func printGrid(grid map[int]map[int]rune, carts []*cart) {
-	var cgrid map[int]map[int]rune
-	cgrid = make(map[int]map[int]rune)
+func printGrid(grid map[position]rune, carts []*cart) {
+	var cgrid map[position]rune
+	cgrid = make(map[position]rune)
 
 	// Make copy so we don't modify grid
-	for row := 0; row < len(grid); row++ {
-		for col := 0; col < len(grid[row]); col++ {
-			if ready := cgrid[row]; ready == nil {
-				cgrid[row] = make(map[int]rune)
-			}
-			cgrid[row][col] = grid[row][col]
-		}
+	for p := range grid {
+		cgrid[p] = grid[p]
 	}
 
 	for _, cart := range carts {
 		// See if we already drew a cart, if so, mark as collision
-		if cgrid[cart.y][cart.x] == '^' ||
-			cgrid[cart.y][cart.x] == 'v' ||
-			cgrid[cart.y][cart.x] == '<' ||
-			cgrid[cart.y][cart.x] == '>' ||
-			cgrid[cart.y][cart.x] == collision {
-			cgrid[cart.y][cart.x] = collision
+		if cgrid[cart.position] == '^' ||
+			cgrid[cart.position] == 'v' ||
+			cgrid[cart.position] == '<' ||
+			cgrid[cart.position] == '>' ||
+			cgrid[cart.position] == collision {
+			cgrid[cart.position] = collision
 			continue
 		}
 
 		// Draw cart in copy grid
 		switch cart.direction {
 		case north:
-			cgrid[cart.y][cart.x] = '^'
+			cgrid[cart.position] = '^'
 		case south:
-			cgrid[cart.y][cart.x] = 'v'
+			cgrid[cart.position] = 'v'
 		case west:
-			cgrid[cart.y][cart.x] = '<'
+			cgrid[cart.position] = '<'
 		case east:
-			cgrid[cart.y][cart.x] = '>'
+			cgrid[cart.position] = '>'
 		}
 	}
 
 	// Render grid, color carts and collisions as red
-	for row := 0; row < len(cgrid); row++ {
-		for col := 0; col < len(cgrid[row]); col++ {
-			char := cgrid[row][col]
-			switch char {
-			case '^', 'v', '>', '<', 'X':
-				fmt.Printf("\033[0;31m%s\033[0m", string(char))
-			default:
-				fmt.Print(string(char))
-			}
-		}
-		fmt.Println()
+	var buf [][]string
+	buf = make([][]string, 151)
+	for i := 0; i < 151; i++ {
+		buf[i] = make([]string, 151)
+		buf[i][150] = "\n"
 	}
+	for p := range cgrid {
+		char := cgrid[p]
+		switch char {
+		case '^', 'v', '>', '<', 'X':
+			buf[p.y][p.x] = fmt.Sprintf("\033[0;31m%s\033[0m", string(char))
+		default:
+			buf[p.y][p.x] = fmt.Sprint(string(char))
+		}
+	}
+	var buf2 []string
+	for i := 0; i < 150; i++ {
+		buf2 = append(buf2, fmt.Sprint(strings.Join(buf[i], "")))
+	}
+	fmt.Println(strings.Join(buf2, ""))
 
 }
