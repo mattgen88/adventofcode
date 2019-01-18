@@ -35,7 +35,7 @@ type cart struct {
 }
 
 func main() {
-	content, _ := ioutil.ReadFile("../demo.txt")
+	content, _ := ioutil.ReadFile("../input.txt")
 	lines := strings.Split(string(content), "\n")
 
 	// Our grid of tracks
