@@ -1,11 +1,11 @@
-﻿using static System.Console;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using static System.Convert;
-using System.Collections.Generic;
-using System;
+using static System.Console;
 using static System.Math;
 
-namespace part1
+namespace part2
 {
     class Program
     {
@@ -24,7 +24,7 @@ namespace part1
             List<Decimal> fuel_costs = new List<Decimal>();
             foreach (Decimal mass in masses)
             {
-                Decimal fuel = Floor(mass / 3) - 2;
+                Decimal fuel = calculateFuel(mass);
                 fuel_costs.Add(fuel);
             }
 
@@ -35,6 +35,15 @@ namespace part1
                 WriteLine(fuel_cost.ToString());
             }
             WriteLine("Total Fuel Cost {0}", fuel_cost);
+        }
+
+        public static Decimal calculateFuel(Decimal mass) {
+            Decimal cost = 0;
+            cost = Floor((mass / 3) - 2);
+            if (cost <= 0) {
+                return 0;
+            }
+            return cost + calculateFuel(cost);
         }
     }
 }
