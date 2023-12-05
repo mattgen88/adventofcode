@@ -12,3 +12,10 @@ func ReadInputSlice(file string) []string {
 	}
 	return strings.Split(string(h), "\n")
 }
+
+func ReadInputSliceAndDo(file string, f func(line string)) {
+	input := ReadInputSlice(file)
+	for _, line := range input {
+		f(line)
+	}
+}
