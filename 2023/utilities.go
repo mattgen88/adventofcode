@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+func ReadInput(file string) string {
+	h, err := os.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+	return string(h)
+}
+
 func ReadInputSlice(file string) []string {
 	h, err := os.ReadFile(file)
 	if err != nil {
