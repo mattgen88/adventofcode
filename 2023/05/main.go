@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
+	"sync"
 
-	"github.com/davecgh/go-spew/spew"
 	utilities "github.com/mattgen88/adventofcode/2023"
 )
 
@@ -14,41 +15,10 @@ func main() {
 	PartTwo()
 }
 
-type farmMap struct {
-	soil        int
-	fertilizer  int
-	water       int
-	light       int
-	temperature int
-	humidity    int
-	location    int
-}
-
-func newFarmMap(id int) *farmMap {
-	return &farmMap{
-		id,
-		id,
-		id,
-		id,
-		id,
-		id,
-		id,
-	}
-}
-
-func initialize(m *map[int]*farmMap, len int) *map[int]*farmMap {
-	for i := 0; i < len; i++ {
-		farmMap := newFarmMap(i)
-		(*m)[i] = farmMap
-	}
-	return m
-}
-
 func PartOne() {
 	input := utilities.ReadInput("input.txt")
 	sections := strings.Split(input, "\n\n")
-	seeds := sections[0]
-	_ = seeds
+	seeds := parseSeeds(sections[0])
 	seedsToSoilMap := parseMap(sections[1])
 	soilToFertilizerMap := parseMap(sections[2])
 	fertilizerToWaterMap := parseMap(sections[3])
@@ -56,19 +26,46 @@ func PartOne() {
 	lightToTemperaturMap := parseMap(sections[5])
 	temperatureToHumidityMap := parseMap(sections[6])
 	humidityToLocationMap := parseMap(sections[7])
-	max := math.Max(getMax(seedsToSoilMap), getMax(soilToFertilizerMap))
-	max = math.Max(max, getMax(fertilizerToWaterMap))
-	max = math.Max(max, getMax(waterToLightMap))
-	max = math.Max(max, getMax(lightToTemperaturMap))
-	max = math.Max(max, getMax(temperatureToHumidityMap))
-	max = math.Max(max, getMax(humidityToLocationMap))
-	spew.Dump(int(max))
-	// we need a map of seed to an array of
-	// soil, fertilizer, water, light, temperature, humidity, location
-	m := make(map[int]*farmMap, int(max))
-	m = *initialize(&m, int(max))
+
+	var closest float64
+	closest = math.Inf(1)
+	for _, seed := range seeds {
+		soilLocation := mappedValueOrDefault(seed, seedsToSoilMap)
+		fertilization := mappedValueOrDefault(soilLocation, soilToFertilizerMap)
+		water := mappedValueOrDefault(fertilization, fertilizerToWaterMap)
+		light := mappedValueOrDefault(water, waterToLightMap)
+		temperature := mappedValueOrDefault(light, lightToTemperaturMap)
+		humidity := mappedValueOrDefault(temperature, temperatureToHumidityMap)
+		location := mappedValueOrDefault(humidity, humidityToLocationMap)
+		closest = math.Min(closest, location)
+	}
+	fmt.Printf("Closest is %f\n", closest)
 }
 
+func mappedValueOrDefault(seed float64, m [][]float64) (result float64) {
+	result = seed
+	for _, row := range m {
+		// source, dest, length
+		destination := row[0]
+		source := row[1]
+		length := row[2]
+		if seed >= source && seed <= source+length {
+			// d is mapped, figure out to what value
+			result = destination + (seed - source)
+			return
+		}
+	}
+	return
+}
+
+func parseSeeds(s string) (seeds []float64) {
+	s = strings.Replace(s, "seeds: ", "", 1)
+	for _, seed := range strings.Split(s, " ") {
+		seedVal, _ := strconv.Atoi(seed)
+		seeds = append(seeds, float64(seedVal))
+	}
+	return
+}
 func parseMap(s string) (data [][]float64) {
 	rows := strings.Split(strings.SplitN(s, "\n", 2)[1], "\n")
 	for _, row := range rows {
@@ -81,12 +78,53 @@ func parseMap(s string) (data [][]float64) {
 	}
 	return
 }
-func getMax(data [][]float64) float64 {
-	max := float64(0)
-	for _, row := range data {
-		max = math.Max(max, math.Max(row[0]+row[2], row[1]+row[2]))
-	}
-	return max
-}
 func PartTwo() {
+	input := utilities.ReadInput("input.txt")
+	sections := strings.Split(input, "\n\n")
+	seeds := parseSeeds(sections[0])
+	seedsToSoilMap := parseMap(sections[1])
+	soilToFertilizerMap := parseMap(sections[2])
+	fertilizerToWaterMap := parseMap(sections[3])
+	waterToLightMap := parseMap(sections[4])
+	lightToTemperaturMap := parseMap(sections[5])
+	temperatureToHumidityMap := parseMap(sections[6])
+	humidityToLocationMap := parseMap(sections[7])
+
+	seedData := make(chan []float64)
+	var wg sync.WaitGroup
+	mu := &sync.Mutex{}
+	closest := math.Inf(1)
+	for i := 0; i < len(seeds)/2; i++ {
+		wg.Add(1)
+		go func() {
+			fmt.Println("Starting thread")
+			defer wg.Done()
+			for seed := range seedData {
+				// return min location
+				start := seed[0]
+				length := seed[1]
+				fmt.Printf("Calculating location of seeds %f through %f\n", start, start+length)
+				for i := start; i < start+length; i++ {
+					soilLocation := mappedValueOrDefault(i, seedsToSoilMap)
+					fertilization := mappedValueOrDefault(soilLocation, soilToFertilizerMap)
+					water := mappedValueOrDefault(fertilization, fertilizerToWaterMap)
+					light := mappedValueOrDefault(water, waterToLightMap)
+					temperature := mappedValueOrDefault(light, lightToTemperaturMap)
+					humidity := mappedValueOrDefault(temperature, temperatureToHumidityMap)
+					location := mappedValueOrDefault(humidity, humidityToLocationMap)
+					mu.Lock()
+					closest = math.Min(closest, location)
+					mu.Unlock()
+				}
+			}
+		}()
+	}
+	for i := 0; i < len(seeds); {
+		seedData <- []float64{seeds[i], seeds[i+1]}
+		i = i + 2
+	}
+	close(seedData)
+	wg.Wait()
+	fmt.Printf("Closest: %f\n", closest)
+
 }
