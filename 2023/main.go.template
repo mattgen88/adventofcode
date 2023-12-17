@@ -1,0 +1,16 @@
+package main
+
+import (
+	utilities "github.com/mattgen88/adventofcode/2023"
+)
+
+func main() {
+	PartOne()
+	PartTwo()
+}
+
+func PartOne() {
+}
+
+func PartTwo() {
+}
