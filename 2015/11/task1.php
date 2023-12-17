@@ -1,6 +1,6 @@
 <?php
 
-$input = "vzbxkghb";
+$input = file_get_contents("input");
 
 while (!testPassword($input)) {
   echo "$input didn't pass\n";

@@ -1,6 +1,6 @@
 <?php
 
-$input = 'ckczppom';
+$input = file_get_contents("input");
 
 function mine($input, $num)
 {

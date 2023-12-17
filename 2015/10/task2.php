@@ -1,5 +1,5 @@
 <?php
-$input = '1113222113';
+$input = file_get_contents("input");
 
 
 $last = $input;
