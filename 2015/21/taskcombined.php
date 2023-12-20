@@ -1,14 +1,19 @@
 <?php
+$input = file_get_contents("input.txt");
+$data = explode("\n", $input);
+$hp = explode(": ", $input[0])[1];
+$damage = explode(": ", $input[1])[1];
+$armor = explode(": ", $input[2])[1];
 $boss = [
   "name"    => "boss",
-  "hp"      => 109,
-  "damage"  => 8,
-  "armor"   => 2,
+  "hp"      => $hp,
+  "damage"  => $damage,
+  "armor"   => $armor,
 ];
 
 $me = [
   "name"    => "spyder",
-  "hp"      => 100,
+  "hp"      => 100, 
   "damage"  => 0,
   "armor"   => 0,
 ];

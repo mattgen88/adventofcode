@@ -1,5 +1,5 @@
 <?php
-$presents = 36000000;
+$presents = file_get_contents("input.txt");
 $houses = [];
 for($i = 1; $i < $presents; $i++) {
     $count = 0;

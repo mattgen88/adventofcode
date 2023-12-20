@@ -1,23 +1,10 @@
 <?php
-//ini_set("xdebug.max_nesting_level", -1);
-//function infinitePaper($row, $col)
-//{
-//    if ($row == 1 && $col == 1)
-//    {
-//        // done!
-//        return 201611125;
-//    }
-//    echo "($row, $col)\n";
-//    if ($col == 1)
-//        return (infinitePaper(1, $row-1) * 252533) % 33554393;
-//    return (infinitePaper($row +1, $col - 1) * 252533) % 33554393;
-//}
-//
-//echo infinitePaper(2978, 3083);
-$targetRow = 2978;
-$targetCol = 3083;
-//$targetRow = 1;
-//$targetCol = 6;
+$input = file_get_contents("input.txt");
+preg_match("^To continue, please consult the code grid in the manual.  Enter the code at row (\d+), column (\d+).$", $input, $matches);
+
+$targetRow = $matches[1][0];
+$targetCol = $matches[2][0];
+
 $row = 1;
 $col = 1;
 $value = 20151125;

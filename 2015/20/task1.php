@@ -1,7 +1,6 @@
 <?php
 
-$presents = 36000000;
-// elf 1 will deliver 36000000 to house 3600000, cap there
+$presents = file_get_contents("input.txt");
 for ($elf=1;$elf <= $presents/10;$elf++) {
   for ($house = $elf;$house <= $presents/10; $house += $elf) {
     @$houses[$house]['number'] = $house;

@@ -255,8 +255,11 @@ class NoManaException extends Exception {
 class SpellAlreadyActiveException extends Exception {
 
 }
-
-$battles = [new battle(58, 9, 50, 500)];
+$input = file_get_contents("input.txt");
+$data = expode("\n", $input);
+$hp = explode(": ", $data[0])[1];
+$damage = explode(": ", $data[1])[1];
+$battles = [new battle($hp, $damage, 50, 500)];
 
 // for each of the battle instances
 // try each of the spells

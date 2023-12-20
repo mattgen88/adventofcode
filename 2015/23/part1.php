@@ -130,5 +130,5 @@ class computer
 
 }
 
-$computer = new computer('input');
+$computer = new computer('input.txt');
 var_dump($computer);
