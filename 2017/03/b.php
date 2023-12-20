@@ -1,5 +1,5 @@
 <?php
 
-$input = 265149;
+$input = file_get_contents("input.txt");
 
 

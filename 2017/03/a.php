@@ -1,6 +1,6 @@
 <?php
 
-$input = 265149;
+$input = file_get_contents("input.txt");
 // Determine how big our square has to be for the input
 
 $factor = 1;

@@ -1,6 +1,6 @@
 <?php
 
-$input = "wtnhxymk";
+$input = file_get_contents("input.txt");
 $i=0;
 $password = "________";
 $count = 0;
