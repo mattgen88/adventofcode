@@ -1,6 +1,6 @@
 <?php
 
-$input = file('input');
+$input = file('input.txt');
 
 foreach ($input as $line) {
   preg_match('/Sue (\d+): (\w+): (\d+), (\w+): (\d+), (\w+): (\d+)/', $line, $matches);

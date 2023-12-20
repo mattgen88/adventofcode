@@ -1,5 +1,5 @@
 <?php
-$input = file('input');
+$input = file('input.txt');
 class table {
   public $seats=[];
   public $persons=[];

@@ -1,5 +1,5 @@
 <?php
-$input = file('input');
+$input = file('input.txt');
 $ingredients = [];
 foreach ($input as $item) {
   preg_match('/([A-Za-z]+): [a-z]+ ([\d-]+), [a-z]+ ([\d-]+), [a-z]+ ([\d-]+), [a-z]+ ([\d-]+), [a-z]+ ([\d-]+)/', $item, $matches);

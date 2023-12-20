@@ -1,6 +1,6 @@
 <?php
 
-$input = file('input');
+$input = file('input.txt');
 
 $count = 0;
 foreach ($input as $line) {

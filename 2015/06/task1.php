@@ -1,6 +1,6 @@
 <?php
 
-$input = file('input');
+$input = file('input.txt');
 //$input = ['turn on 0,0 through 4,9', 'turn off 0,0 through 0,0', 'turn off 1,1 through 1,1', 'turn off 0,0 through 9,0'];
 $grid = [];
 

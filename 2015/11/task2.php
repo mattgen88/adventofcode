@@ -1,6 +1,6 @@
 <?php
 
-$input = file_get_contents("input");
+$input = file_get_contents("input.txt");
 
 while (!testPassword($input)) {
   echo "$input didn't pass\n";

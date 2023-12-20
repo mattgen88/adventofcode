@@ -1,5 +1,5 @@
   <?php
-  $input = file('input');
+  $input = file('input.txt');
   $wires = [];
   foreach ($input as $in) {
     preg_match('/([a-z\d]+ )?([A-Z]+ )?([a-z\d]+) -> ([a-z\d]+)/', $in, $matches);

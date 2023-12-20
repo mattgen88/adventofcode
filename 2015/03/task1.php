@@ -1,5 +1,5 @@
 <?php
-$input = file_get_contents("input");
+$input = file_get_contents("input.txt");
 $grid = [];
 $x = 0;
 $y = 0;

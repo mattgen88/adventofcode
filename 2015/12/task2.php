@@ -1,5 +1,5 @@
 <?php
-$input = file_get_contents('input');
+$input = file_get_contents('input.txt');
 // $input = '[1,"red",5]';
 $document = json_decode($input);
 

@@ -1,5 +1,5 @@
 <?php
-$input = file('input', FILE_IGNORE_NEW_LINES);
+$input = file('input.txt', FILE_IGNORE_NEW_LINES);
 sort($input);
 $num_containers = count($input);
 

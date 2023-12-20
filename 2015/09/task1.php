@@ -1,5 +1,5 @@
 <?php
-$input = file('input');
+$input = file('input.txt');
 $location_names = [];
 $locations = [];
 foreach ($input as $location) {
