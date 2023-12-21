@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/davecgh/go-spew/spew"
 	utilities "github.com/mattgen88/adventofcode/2023"
 )
 
@@ -10,7 +13,13 @@ func main() {
 }
 
 func PartOne() {
+	fmt.Println("part 1")
+	input := utilities.ReadInput("example.txt")
+	spew.Dump(input)
 }
 
 func PartTwo() {
+	fmt.Println("part 2")
+	input := utilities.ReadInput("example.txt")
+	spew.Dump(input)
 }
