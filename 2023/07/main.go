@@ -257,8 +257,8 @@ func IsFourOfKind(hand map[rune]int) bool {
 	hasPair := false
 	hasThree := false
 	hasFour := false
-	for _, c := range hand {
-		if c == 2 {
+	for r, c := range hand {
+		if c == 2 && r != 'J' {
 			hasPair = true
 		}
 		if c == 3 {
